@@ -16,6 +16,7 @@ abstract contract Helper {
     address _masterMinter = address(1);
     address _blacklister = address(1);
     address _owner = address(1);
+    address _pauser = address(1);
 
     address proxy;
 
@@ -24,7 +25,7 @@ abstract contract Helper {
         //Upgrades proxy
         proxy = Upgrades.deployUUPSProxy(
             "mATV1.sol",
-            abi.encodeCall(mATV1.initialize, (_name, _symbol, _currency, __decimals, _masterMinter, _blacklister, _owner))
+            abi.encodeCall(mATV1.initialize, (_name, _symbol, _currency, __decimals, _masterMinter, _blacklister, _owner, _pauser))
         );
 
         token = mATV1(payable(proxy));

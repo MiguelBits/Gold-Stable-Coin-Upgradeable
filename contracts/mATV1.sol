@@ -47,7 +47,8 @@ contract mATV1 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC
         uint8 __decimals,
         address _masterMinter,
         address _blacklister,
-        address _owner
+        address _owner,
+        address _pauser
         ) initializer public {
         __ERC20_init(_name, _symbol);
         __ERC20Burnable_init();
@@ -58,6 +59,7 @@ contract mATV1 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC
         currency = _currency;
         _decimals = __decimals;
         masterMinter = _masterMinter;
+        pauser = _pauser; 
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
