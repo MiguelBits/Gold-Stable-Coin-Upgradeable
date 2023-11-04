@@ -1,3 +1,3 @@
 Commands:
 
-forge test -vv --ffi
+forge clean && forge test -vv --ffi
