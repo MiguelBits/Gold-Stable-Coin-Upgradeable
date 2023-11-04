@@ -10,8 +10,9 @@ contract MintTokenTest is HelperTest {
     address minter = address(2);
 
     function setUp() public {
+        uint256 amount = 1 * 10 **__decimals;
         deployToken();
-        configureMinter(minter, 1 * 10 **__decimals);
+        configureMinter(minter, amount);
     }
 
     function testMint() public {

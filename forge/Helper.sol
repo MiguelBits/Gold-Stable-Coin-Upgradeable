@@ -76,10 +76,16 @@ contract HelperTest is Helper, Test {
     function configureMinter(address minter, uint256 minterAllowedAmount) public {
         vm.prank(_masterMinter);
         token.configureMinter(minter, minterAllowedAmount);
+
+        assertTrue(token.minterAllowance(minter) == minterAllowedAmount, "minterAllowance is not equal");
+        assertTrue(token.isMinter(minter), "isMinter is not equal");
     }
 
     function removeMinter(address minter) public {
         vm.prank(_masterMinter);
         token.removeMinter(minter);
+
+        assertTrue(token.minterAllowance(minter) == 0, "minterAllowance is not equal");
+        assertTrue(!token.isMinter(minter), "isMinter is not equal");
     }
 }

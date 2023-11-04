@@ -68,7 +68,7 @@ contract mATV1 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC
      * @dev Throws if called by any account other than the blacklister
     */
     modifier onlyBlacklister() {
-        require(msg.sender == blacklister);
+        require(msg.sender == blacklister, "onlyBlacklister");
         _;
     }
 
@@ -77,7 +77,7 @@ contract mATV1 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC
      * @param _account The address to check
     */
     modifier notBlacklisted(address _account) {
-        require(blacklisted[_account] == false);
+        require(blacklisted[_account] == false, "Blacklisted");
         _;
     }
 
@@ -93,7 +93,7 @@ contract mATV1 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC
      * @dev Throws if called by any account other than a minter
     */
     modifier onlyMinters() {
-        require(minters[msg.sender] == true);
+        require(minters[msg.sender] == true, "onlyMinters");
         _;
     }
     
@@ -101,7 +101,7 @@ contract mATV1 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC
      * @dev Throws if called by any account other than the masterMinter
     */
     modifier onlyMasterMinter() {
-        require(msg.sender == masterMinter);
+        require(msg.sender == masterMinter, "onlyMasterMinter");
         _;
     }
 
@@ -260,4 +260,30 @@ contract mATV1 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC
         onlyOwner
         override
     {}
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////// TRANSFER FUNCTIONS ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @dev This functions cannot be called when paused or when called by blacklisted addresses or to blacklisted addresses.
+     */
+    function approve(address _spender, uint256 _value) whenNotPaused notBlacklisted(msg.sender) notBlacklisted(_spender) public override returns (bool) {
+        address _owner = _msgSender();
+        _approve(_owner, _spender, _value);
+        return true;
+    }
+
+    function transferFrom(address _from, address _to, uint256 _value) whenNotPaused notBlacklisted(msg.sender) notBlacklisted(_from) notBlacklisted(_to) public override returns (bool) {
+        address spender = _msgSender();
+        _spendAllowance(_from, spender, _value);
+        _transfer(_from, _to, _value);
+        return true;
+    }
+
+    function transfer(address _to, uint256 _value) whenNotPaused notBlacklisted(msg.sender) notBlacklisted(_to) public override returns (bool) {
+        address _owner = _msgSender();
+        _transfer(_owner, _to, _value);
+        return true;
+    }
 }
