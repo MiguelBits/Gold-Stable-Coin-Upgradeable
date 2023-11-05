@@ -1,8 +1,6 @@
 [profile.default]
 src = "contracts"
 out = "out"
-test = "forge/test"
-scripts = "forge/scripts"
 libs = ["lib"]
 build_info = true
 extra_output = ["storageLayout"]

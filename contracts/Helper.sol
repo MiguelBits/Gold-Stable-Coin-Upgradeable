@@ -13,10 +13,10 @@ abstract contract Helper {
     string _symbol = "mAT";
     string _currency = "GOLD";
     uint8 __decimals = 18;
-    address _masterMinter = address(1);
-    address _blacklister = address(1);
-    address _owner = address(1);
-    address _pauser = address(1);
+    address _masterMinter = 0xaC0D2cF77a8F8869069fc45821483701A264933B;
+    address _blacklister = 0xaC0D2cF77a8F8869069fc45821483701A264933B;
+    address _owner = 0xaC0D2cF77a8F8869069fc45821483701A264933B;
+    address _pauser = 0xaC0D2cF77a8F8869069fc45821483701A264933B;
 
     address proxy;
 
@@ -35,6 +35,16 @@ abstract contract Helper {
         _assertDeployment();
     }
 
+    function beaconToken() public {
+        address beacon = Upgrades.deployBeacon("mATV1.sol", msg.sender);
+        proxy = Upgrades.deployBeaconProxy(beacon, abi.encodeCall(mATV1.initialize, (_name, _symbol, _currency, __decimals, _masterMinter, _blacklister, _owner, _pauser)));
+        console.log("proxy address: %s", address(proxy));
+
+        token = mATV1(payable(proxy));
+
+        // Upgrades.upgradeBeacon(beacon, "GreeterV2.sol");
+    }
+
     function upgradeContract() public {
         Upgrades.upgradeProxy(
             proxy,
@@ -44,7 +54,7 @@ abstract contract Helper {
     }
 
     function _assertDeployment() internal virtual {
-        //OTDO
+        //TODO
     }
 }
 

@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
-import "../Helper.sol";
+import "../contracts/Helper.sol";
 import "../../contracts/mATV1.sol";
 
-contract BlacklistTokenTest is HelperTest {
+contract PauseTokenTest is HelperTest {
 
     address minter = address(2);
 
@@ -15,27 +15,24 @@ contract BlacklistTokenTest is HelperTest {
         configureMinter(minter, amount);
     }
 
-    function testBlacklist() public {
+    function testPause() public {
         uint256 amount = 1 * 10 **__decimals;
 
-        vm.prank(_blacklister);
-        token.blacklist(minter);
-
-        //assertTrue
-        assertTrue(token.isBlacklisted(minter), "minter is not blacklisted");
+        vm.prank(_pauser);
+        token.pause();
 
         vm.startPrank(minter);
 
-        vm.expectRevert("Blacklisted");
+        vm.expectRevert(PausableUpgradeable.EnforcedPause.selector);
         token.mint(minter, amount);
 
-        vm.expectRevert("Blacklisted");
+        vm.expectRevert(PausableUpgradeable.EnforcedPause.selector);
         token.transfer(minter, amount);
 
-        vm.expectRevert("Blacklisted");
+        vm.expectRevert(PausableUpgradeable.EnforcedPause.selector);
         token.transferFrom(minter, minter, amount);
 
-        vm.expectRevert("Blacklisted");
+        vm.expectRevert(PausableUpgradeable.EnforcedPause.selector);
         token.approve(minter, amount);
 
         vm.stopPrank();
@@ -44,25 +41,22 @@ contract BlacklistTokenTest is HelperTest {
         assertTrue(token.balanceOf(minter) == 0, "minter balance is not 0");
     }
 
-    function testUnBlackList() public {
+    function testUnPause() public {
         uint256 amount = 1 * 10 **__decimals;
 
-        vm.prank(_blacklister);
-        token.blacklist(minter);
-
-        //assertTrue
-        assertTrue(token.isBlacklisted(minter), "minter is not blacklisted");
-
-        vm.prank(_blacklister);
-        token.unBlacklist(minter);
-
-        //assertFalse
-        assertFalse(token.isBlacklisted(minter), "minter is blacklisted");
+        vm.prank(_pauser);
+        token.pause();
 
         vm.startPrank(minter);
-
+        vm.expectRevert(PausableUpgradeable.EnforcedPause.selector);
         token.mint(minter, amount);
+        vm.stopPrank();
 
+        vm.prank(_pauser);
+        token.unpause();
+
+        vm.startPrank(minter);
+        token.mint(minter, amount);
         vm.stopPrank();
 
         //assertTrue
